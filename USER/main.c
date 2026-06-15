@@ -43,10 +43,10 @@
 **********************************************************************/
 
 /**************************************************
-´¥ÃþµØÖ·ÉèÖÃÔÚ#include "func_handler.h"
-ÏÔÊ¾±äÁ¿µØÖ·ÔÚ#include "start_win.h"
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½#include "func_handler.h"
+ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½#include "start_win.h"
 
-//µã»÷°´¼ü´¦Àí»Øµ÷º¯Êý
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 void btn_click_callback(u16 addr,u16 val)
 
 **************************************************/
@@ -55,55 +55,43 @@ SysDataDef xdata str_sys;
 void Init_Rtu_RegHoldingBuf(SysDataDef* dat)
 {
 	memset(&str_sys,0,sizeof(str_sys));
-	usRegHoldingBuf[ADDR_MOTOR_GET_FWD].dat = (u16 *)&str_sys.mc_para.fwd;
-	usRegHoldingBuf[ADDR_MOTOR_GET_REV].dat = (u16 *)&str_sys.mc_para.rev;
-	usRegHoldingBuf[ADDR_MOTOR_GET_RESET].dat = (u16 *)&str_sys.mc_para.reset;
-	usRegHoldingBuf[ADDR_MOTOR_GET_FAULT].dat = (u16 *)&str_sys.mc_para.fault;
-	usRegHoldingBuf[ADDR_MOTOR_SET_RUN].dat = (u16 *)&str_sys.mc_para.set_run;
-	usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&str_sys.mc_para.set_vol;
-
-	usRegHoldingBuf[ADDR_GET_MEMSX].dat = (u16 *)&dat->str_mems.x;
-	usRegHoldingBuf[ADDR_GET_MEMSY].dat = (u16 *)&dat->str_mems.y;
-	usRegHoldingBuf[ADDR_GET_MEMSZ].dat = (u16 *)&dat->str_mems.z;
-
-	usRegHoldingBuf[ADDR_TANK1_TEMP].dat = (u16 *)&str_sys.tank1_temp;
-	usRegHoldingBuf[ADDR_TANK2_TEMP].dat = (u16 *)&str_sys.tank2_temp;
+	usRegHoldingBuf[ADDR_MOTOR_GET_FWD].dat = (u16 *)&dat->fwd;
+	usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&dat->set_vol;
+	usRegHoldingBuf[ADDR_SET_TEMP_CMD].dat = (u16 *)&dat->set_temp_cmd;
+	usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;   
+	usRegHoldingBuf[ADDR_NTC_TEMP].dat = (u16 *)&dat->ntc_temp;
 	
-	usRegHoldingBuf[ADDR_TEMP].dat = (u16 *)&str_sys.temprature;
-	usRegHoldingBuf[ADDR_CUR].dat = (u16 *)&str_sys.current;
-  usRegHoldingBuf[ADDR_DOOR].dat = (u16 *)&str_sys.door;//
-	usRegHoldingBuf[ADDR_LOCK].dat = (u16 *)&str_sys.lock;//
+	usRegHoldingBuf[ADDR_SET_FEQ].dat = (u16 *)&dat->set_feq;
+	usRegHoldingBuf[ADDR_DISP_FREQ].dat = (u16 *)&dat->disp_freq;
+  	usRegHoldingBuf[ADDR_DOOR].dat = (u16 *)&dat->door;
+	usRegHoldingBuf[ADDR_LOCK].dat = (u16 *)&dat->lock;
 
+	usRegHoldingBuf[ADDR_SET_LOCK].dat = (u16 *)&dat->set_lock;  //é—¨é”æŽ§åˆ¶
 	usRegHoldingBuf[ADDR_SET_DC1].dat = (u16 *)&dat->set_dc1;
 	usRegHoldingBuf[ADDR_SET_DC2].dat = (u16 *)&dat->set_dc2;
 	usRegHoldingBuf[ADDR_SET_DC3].dat = (u16 *)&dat->set_dc3;
-	
-	usRegHoldingBuf[ADDR_SET_AC1].dat = (u16 *)&dat->set_ac1;
+
+	usRegHoldingBuf[ADDR_SET_AC1].dat = (u16 *)&dat->set_ac1;   //åŽ‹ç¼©æœºé£Žæ‰‡æŽ§åˆ¶
 	usRegHoldingBuf[ADDR_SET_AC2].dat = (u16 *)&dat->set_ac2;
 	usRegHoldingBuf[ADDR_SET_AC3].dat = (u16 *)&dat->set_ac3;
-	
-	usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;
-		
-	usRegHoldingBuf[ADDR_SET_LOCK].dat = (u16 *)&dat->set_lock;
-	usRegHoldingBuf[ADDR_GET_LOCK].dat = (u16 *)&dat->get_lock;
 
 }
 
 void main(void)
 {
-	sys_init();//ÏµÍ³³õÊ¼»¯
+	sys_init();//ÏµÍ³ï¿½ï¿½Ê¼ï¿½ï¿½
 	Init_Rtu_RegHoldingBuf(&str_sys);
 	rtu_data_init();
 	win_init();
 	btn_init();
-	T5L_HMIslvInit(); //³õÊ¼»¯Í¨Ñ¶²ÎÊý
+	T5L_HMIslvInit(); //ï¿½ï¿½Ê¼ï¿½ï¿½Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½
 	EA=1;
-	Task_Manage_List_Init( );  // ÊÂ¼þÈÎÎñº¯Êý³õÊ¼»¯
+	Task_Manage_List_Init( );  // ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 	while(1)
 	{
 		Execute_Task_List_RUN();
 
-		T5L_HMIslvSub(); //¹¦ÄÜ£ºÔÚÏß¸üÐÂ´¥ÃþÆÁ³ÌÐò
+		T5L_HMIslvSub(); //ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ß¸ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	}
 }
