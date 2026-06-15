@@ -1,0 +1,262 @@
+C51 COMPILER V9.60.7.0   T5LUART4                                                          10/22/2025 17:31:06 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE T5LUART4
+OBJECT MODULE PLACED IN ..\OBJ\T5LUart4.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\T5LDriver\T5LUart4.c LARGE OMF2 OPTIMIZE(3,SIZE) BROWSE INCDIR(..\USE
+                    -R;..\FUNC_HANDLER;..\GUI_APP;..\HANDWARE\NOR_FLASH;..\HANDWARE\USART;..\T5LDriver) DEBUG PRINT(..\OBJ\T5LUart4.lst) TABS
+                    -(2) OBJECT(..\OBJ\T5LUart4.obj)
+
+line level    source
+
+   1          /*
+   2            HMI 上位机通讯  ModBusSlave 115200,n,8,1  ，通讯地址 1 ，用于在线更新载程序和更新资源文件
+   3            接收数据写入 HmiSlvBuff 缓冲区中
+   4          */
+   5          #include "T5LDriver.h"
+   6          #include "T5LUart4.h"
+   7          #include "crc16table.h"
+   8          
+   9          //变量定义
+  10          struct TX_SLVCMD_STRUCT data HmiSlvCmd;
+  11          union TX_SLVBUFF_STRUCT xdata HmiSlvBuff;
+  12          unsigned char xdata HmiSlvSendBuff[250]; //发送报文长度
+  13          
+  14          /*
+  15          
+  16          //使用说明 拷贝到定时器中 5ms ，完成通讯的超时异常处理
+  17            if (HmiSlvCmd.Status==1){
+  18              HmiSlvCmd.Delay++; 
+  19              if (HmiSlvCmd.Delay>0) HmiSlvCmd.Status=2; 
+  20            }
+  21            if (HmiSlvCmd.Step>0 || HmiSlvCmd.Status>2) //ModBus 接收数据超时判断
+  22            {
+  23              HmiSlvCmd.TxTimeOut++; //超时接收发送时间 100ms
+  24              if (HmiSlvCmd.TxTimeOut>20)
+  25              {
+  26                HmiSlvCmd.TxTimeOut=0;
+  27                HmiSlvCmd.Step=0;
+  28                HmiSlvCmd.Status=0;
+  29              }
+  30            }
+  31            else HmiSlvCmd.TxTimeOut=0;
+  32          
+  33          
+  34          */
+  35          
+  36          void sys_uart4_init()//115200
+  37          {
+  38   1        SCON2T=0x80;    //UART4 配置 8N1 115200
+  39   1        SCON2R=0x80;
+  40   1        BODE2_DIV_H=0x00; //波特率=FCLK/8*DIV  T5L  s4_s5_25804800/9600=2688=0X0A80 S4_S5_ 115200=00E0   s2_11520
+             -0=03E4 S2_9600=02B0
+  41   1        //BODE2_DIV_L=0x1c;    //波特率为： 921600
+  42   1        BODE2_DIV_L=0xe0;    //波特率为： 115200
+  43   1        ES2T=1;
+  44   1        ES2R=1;
+  45   1      }
+  46          
+  47          
+  48          //串口4发送中断
+  49          void T5L_Uart4_TX() interrupt 10 using 2
+  50          {
+  51   1        
+  52   1        SCON2T&=0xfe;
+C51 COMPILER V9.60.7.0   T5LUART4                                                          10/22/2025 17:31:06 PAGE 2   
+
+  53   1      
+  54   1        if (HmiSlvCmd.Status==3)
+  55   1        {
+  56   2          HmiSlvCmd.TxTimeOut=0;
+  57   2          if (HmiSlvCmd.Length>=HmiSlvCmd.SendLength)
+  58   2          {
+  59   3            HmiSlvCmd.Status=0;
+  60   3            HmiSlvCmd.Step=0;
+  61   3          }
+  62   2          else SBUF2_TX=HmiSlvSendBuff[HmiSlvCmd.Length++];
+  63   2        }
+  64   1      }
+  65          //接收中断
+  66          void T5L_Uart4_RX() interrupt 11 using 2
+  67          {
+  68   1        unsigned int data rData,tmp;
+  69   1        rData=SBUF2_RX;
+  70   1        SCON2R&=0xfe;
+  71   1        if (HmiSlvCmd.Status>0) return;
+  72   1        HmiSlvCmd.TxTimeOut=0;
+  73   1        switch (HmiSlvCmd.Step){
+  74   2        case 0://判断地址
+  75   2          if (rData==HmiSlvCmd.Addr)
+  76   2          {
+  77   3            HmiSlvBuff.Value[0]=rData;
+  78   3            HmiSlvCmd.Length=1;
+  79   3            HmiSlvCmd.Step=1;
+  80   3            HmiSlvCmd.JsCrc.Data=0xffff;
+  81   3            tmp=CRC16_TABLE[(HmiSlvCmd.JsCrc.Data^rData)&0x00ff];
+  82   3            HmiSlvCmd.JsCrc.Data=(HmiSlvCmd.JsCrc.Data>>8)^tmp;
+  83   3          }
+  84   2          break;
+  85   2        case 1://获取报文包头块
+  86   2          HmiSlvBuff.Value[HmiSlvCmd.Length++]=rData;     
+  87   2          if (HmiSlvCmd.Length<7)
+  88   2          {
+  89   3            tmp=CRC16_TABLE[(HmiSlvCmd.JsCrc.Data^rData)&0x00ff];
+  90   3            HmiSlvCmd.JsCrc.Data=(HmiSlvCmd.JsCrc.Data>>8)^tmp;
+  91   3          }
+  92   2          if(HmiSlvCmd.Length==7 && HmiSlvBuff.Item.Command==0x10)
+  93   2          {
+  94   3            tmp=CRC16_TABLE[(HmiSlvCmd.JsCrc.Data^rData)&0x00ff];
+  95   3            HmiSlvCmd.JsCrc.Data=(HmiSlvCmd.JsCrc.Data>>8)^tmp;       
+  96   3            HmiSlvCmd.RxLength=9+HmiSlvBuff.ItemX.ByteCount;
+  97   3            if(HmiSlvCmd.RxLength>252) 
+  98   3            {
+  99   4              HmiSlvCmd.Step=0;
+ 100   4              break;
+ 101   4            }
+ 102   3            HmiSlvCmd.Step=2;
+ 103   3            break;
+ 104   3          }     
+ 105   2          if (HmiSlvCmd.Length>=8){ //功能码3 和 6
+ 106   3            if (HmiSlvCmd.JsCrc.Value[0]==HmiSlvBuff.Item.LowCrc && HmiSlvCmd.JsCrc.Value[1]==HmiSlvBuff.Item.HiCrc
+             -)
+ 107   3            {//接收正确         
+ 108   4              HmiSlvCmd.Delay=0;
+ 109   4              HmiSlvCmd.Status=2; //数据接收完成   通讯转发需要延迟 Status=1
+ 110   4            }
+ 111   3            HmiSlvCmd.Step=0;
+ 112   3          }
+ 113   2          break;
+C51 COMPILER V9.60.7.0   T5LUART4                                                          10/22/2025 17:31:06 PAGE 3   
+
+ 114   2        case 2: //0x10
+ 115   2          HmiSlvBuff.Value[HmiSlvCmd.Length++]=rData;     
+ 116   2          if (HmiSlvCmd.Length<(HmiSlvCmd.RxLength-1))
+ 117   2          {
+ 118   3            tmp=CRC16_TABLE[(HmiSlvCmd.JsCrc.Data^rData)&0x00ff];
+ 119   3            HmiSlvCmd.JsCrc.Data=(HmiSlvCmd.JsCrc.Data>>8)^tmp;
+ 120   3          }
+ 121   2          if (HmiSlvCmd.Length>=HmiSlvCmd.RxLength){
+ 122   3            if (HmiSlvCmd.JsCrc.Value[0]==HmiSlvBuff.Value[HmiSlvCmd.RxLength-1] && HmiSlvCmd.JsCrc.Value[1]==HmiSl
+             -vBuff.Value[HmiSlvCmd.RxLength-2])
+ 123   3            {//接收正确
+ 124   4              
+ 125   4              HmiSlvCmd.Delay=0;
+ 126   4              HmiSlvCmd.Status=2; //数据接收完成  通讯转发需要延迟 Status=1
+ 127   4            }
+ 128   3            HmiSlvCmd.Step=0;
+ 129   3          }     
+ 130   2          break;
+ 131   2        default:
+ 132   2          HmiSlvCmd.Step=0;
+ 133   2          break;
+ 134   2        } 
+ 135   1      }
+ 136          
+ 137          //初始显示通讯程序
+ 138          void T5L_HMIslvInit()
+ 139          {
+ 140   1        HmiSlvCmd.Addr=1; //ModBus 地址为1
+ 141   1        HmiSlvCmd.Status=0;
+ 142   1        HmiSlvCmd.Step=0; 
+ 143   1        HmiSlvCmd.TxTimeOut=0;
+ 144   1      }
+ 145          //解析处理数据
+ 146          unsigned char HMICommand()
+ 147          {
+ 148   1        unsigned char i;
+ 149   1        unsigned int tmp;
+ 150   1        unsigned char retVal;
+ 151   1      // 返回0 不发送数据 返回1发送数据
+ 152   1        retVal=0;
+ 153   1        switch (HmiSlvBuff.Item.Command)
+ 154   1        {
+ 155   2        case 3: //读取
+ 156   2          if (HmiSlvBuff.Item.DataValue==0 || HmiSlvBuff.Item.DataValue>115)
+ 157   2          {//异常或读取内容禁止处理   
+ 158   3            return 0;
+ 159   3          }
+ 160   2          HmiSlvSendBuff[0]=HmiSlvCmd.Addr;
+ 161   2          HmiSlvSendBuff[1]=3;
+ 162   2          HmiSlvSendBuff[2]=HmiSlvBuff.Item.DataValue*2;
+ 163   2          HmiSlvCmd.SendLength=HmiSlvSendBuff[2]+5;
+ 164   2          tmp=HmiSlvBuff.Item.RegisterAddr*2;
+ 165   2          T5L_ReadDgusBytes(HmiSlvBuff.Item.RegisterAddr,&HmiSlvSendBuff[3],HmiSlvSendBuff[2]);
+ 166   2          retVal=1;
+ 167   2          break;
+ 168   2        case 6: //写入
+ 169   2          T5L_WriteDgusBytes(HmiSlvBuff.Item.RegisterAddr,&HmiSlvBuff.Value[4],2);
+ 170   2          HmiSlvCmd.SendLength=8;
+ 171   2          for (i=0;i<6;i++)
+ 172   2          {
+ 173   3            HmiSlvSendBuff[i]=HmiSlvBuff.Value[i];
+ 174   3          }
+C51 COMPILER V9.60.7.0   T5LUART4                                                          10/22/2025 17:31:06 PAGE 4   
+
+ 175   2          retVal=1;
+ 176   2          break;
+ 177   2        case 16: //批量写入
+ 178   2          if(HmiSlvBuff.ItemX.DataValue==0 || HmiSlvBuff.ItemX.DataValue>125) return 0; //不能超过125个 word
+ 179   2          T5L_WriteDgusBytes(HmiSlvBuff.Item.RegisterAddr,HmiSlvBuff.ItemX.uint8,HmiSlvBuff.ItemX.ByteCount);   
+ 180   2          HmiSlvCmd.SendLength=8;
+ 181   2          for (i=0;i<6;i++)
+ 182   2          {
+ 183   3            HmiSlvSendBuff[i]=HmiSlvBuff.Value[i];
+ 184   3          }
+ 185   2          retVal=1;
+ 186   2          break;
+ 187   2        default:
+ 188   2          return 0;
+ 189   2        }
+ 190   1        return retVal;
+ 191   1      }
+ 192          //远程通讯响应子程序 返回2 解析命令
+ 193          unsigned char T5L_HMIslvSub()
+ 194          {
+ 195   1        unsigned char i;
+ 196   1        unsigned int tmp;
+ 197   1        unsigned char retVal;
+ 198   1        if (HmiSlvCmd.Status!=2) return 0;
+ 199   1        retVal=HMICommand();
+ 200   1        if (retVal==0)
+ 201   1        {
+ 202   2          HmiSlvCmd.Status=0;//无返回
+ 203   2          HmiSlvCmd.Step=0;
+ 204   2          return 0;
+ 205   2        }
+ 206   1        
+ 207   1        HmiSlvCmd.JsCrc.Data=0xffff;
+ 208   1        for (i=0;i<HmiSlvCmd.SendLength-2;i++){//计算包头块CRC
+ 209   2          tmp=CRC16_TABLE[(HmiSlvCmd.JsCrc.Data^HmiSlvSendBuff[i])&0x00ff];
+ 210   2          HmiSlvCmd.JsCrc.Data=(HmiSlvCmd.JsCrc.Data>>8)^tmp;
+ 211   2        }
+ 212   1        HmiSlvSendBuff[HmiSlvCmd.SendLength-2]=HmiSlvCmd.JsCrc.Value[1];
+ 213   1        HmiSlvSendBuff[HmiSlvCmd.SendLength-1]=HmiSlvCmd.JsCrc.Value[0];
+ 214   1      
+ 215   1        //发送数据
+ 216   1        HmiSlvCmd.Step=0;
+ 217   1        HmiSlvCmd.Length=1;
+ 218   1        HmiSlvCmd.Status=3;
+ 219   1        SBUF2_TX=HmiSlvSendBuff[0];
+ 220   1        return retVal;
+ 221   1      }
+ 222          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1072    ----
+   CONSTANT SIZE    =    512    ----
+   XDATA SIZE       =    550       8
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+C51 COMPILER V9.60.7.0   T5LUART4                                                          10/22/2025 17:31:06 PAGE 5   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

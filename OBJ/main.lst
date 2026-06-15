@@ -1,0 +1,144 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\OBJ\main.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE main.c LARGE OMF2 OPTIMIZE(3,SIZE) BROWSE INCDIR(..\USER;..\FUNC_HANDLER
+                    -;..\GUI_APP;..\HANDWARE\NOR_FLASH;..\HANDWARE\USART;..\T5LDriver) DEBUG PRINT(..\OBJ\main.lst) TABS(2) OBJECT(..\OBJ\mai
+                    -n.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          #include "string.h"
+   3          
+   4          /***********************Version record********************************
+   5           
+   6           Version:V4.0
+   7           date:2022/06/20
+   8           author:Jason
+   9           Note:
+  10           1.Initial creation 
+  11           ------------------------------------------
+  12           
+  13           Version:V4.01
+  14           date:2022/xx/xx
+  15           author:Rui.Wang
+  16           Note:xx
+  17          
+  18           -----------------------------------------
+  19           
+  20           Version:V4.02
+  21           date:2022/xx/xx
+  22           author:Rui.Wang
+  23           Note:xx
+  24           ------------------------------------------
+  25           
+  26           Version:V4.03
+  27           date:2022/xx/xx
+  28           author:Rui.Wang
+  29           Note:xx  
+  30           ------------------------------------------
+  31           
+  32           Version:V4.04
+  33           date:2022/12/05
+  34           author:Jason
+  35           Note:
+  36           1.modify FM200&BMxx-series door-lock logic
+  37           2.fix FM200 work parameters 
+  38           3.modify modbus RTU protocol layer:
+  39            use the data sending cache to replace data variables 
+  40           to solve the problem that data is overwritten when tasks
+  41           are out of synchronization
+  42           4.add BMxx-series the window pop-up tips when the status change form pause to start,
+  43          **********************************************************************/
+  44          
+  45          /**************************************************
+  46          触摸地址设置在#include "func_handler.h"
+  47          显示变量地址在#include "start_win.h"
+  48          
+  49          //点击按键处理回调函数
+  50          void btn_click_callback(u16 addr,u16 val)
+  51          
+  52          **************************************************/
+  53          SysDataDef xdata str_sys;
+C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 2   
+
+  54          
+  55          void Init_Rtu_RegHoldingBuf(SysDataDef* dat)
+  56          {
+  57   1        memset(&str_sys,0,sizeof(str_sys));
+  58   1        usRegHoldingBuf[ADDR_MOTOR_GET_FWD].dat = (u16 *)&str_sys.mc_para.fwd;
+  59   1        usRegHoldingBuf[ADDR_MOTOR_GET_REV].dat = (u16 *)&str_sys.mc_para.rev;
+  60   1        usRegHoldingBuf[ADDR_MOTOR_GET_RESET].dat = (u16 *)&str_sys.mc_para.reset;
+  61   1        usRegHoldingBuf[ADDR_MOTOR_GET_FAULT].dat = (u16 *)&str_sys.mc_para.fault;
+  62   1        usRegHoldingBuf[ADDR_MOTOR_SET_RUN].dat = (u16 *)&str_sys.mc_para.set_run;
+  63   1        usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&str_sys.mc_para.set_vol;
+  64   1      
+  65   1        usRegHoldingBuf[ADDR_GET_MEMSX].dat = (u16 *)&dat->str_mems.x;
+  66   1        usRegHoldingBuf[ADDR_GET_MEMSY].dat = (u16 *)&dat->str_mems.y;
+  67   1        usRegHoldingBuf[ADDR_GET_MEMSZ].dat = (u16 *)&dat->str_mems.z;
+  68   1      
+  69   1        usRegHoldingBuf[ADDR_TANK1_TEMP].dat = (u16 *)&str_sys.tank1_temp;
+  70   1        usRegHoldingBuf[ADDR_TANK2_TEMP].dat = (u16 *)&str_sys.tank2_temp;
+  71   1        
+  72   1        usRegHoldingBuf[ADDR_TEMP].dat = (u16 *)&str_sys.temprature;
+  73   1        usRegHoldingBuf[ADDR_CUR].dat = (u16 *)&str_sys.current;
+  74   1        usRegHoldingBuf[ADDR_DOOR].dat = (u16 *)&str_sys.door;//
+  75   1        usRegHoldingBuf[ADDR_LOCK].dat = (u16 *)&str_sys.lock;//
+  76   1      
+  77   1        usRegHoldingBuf[ADDR_SET_DC1].dat = (u16 *)&dat->set_dc1;
+  78   1        usRegHoldingBuf[ADDR_SET_DC2].dat = (u16 *)&dat->set_dc2;
+  79   1        usRegHoldingBuf[ADDR_SET_DC3].dat = (u16 *)&dat->set_dc3;
+  80   1        
+  81   1        usRegHoldingBuf[ADDR_SET_AC1].dat = (u16 *)&dat->set_ac1;
+  82   1        usRegHoldingBuf[ADDR_SET_AC2].dat = (u16 *)&dat->set_ac2;
+  83   1        usRegHoldingBuf[ADDR_SET_AC3].dat = (u16 *)&dat->set_ac3;
+  84   1        
+  85   1        usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;
+  86   1          
+  87   1        usRegHoldingBuf[ADDR_SET_LOCK].dat = (u16 *)&dat->set_lock;
+  88   1        usRegHoldingBuf[ADDR_GET_LOCK].dat = (u16 *)&dat->get_lock;
+  89   1      
+  90   1      }
+  91          
+  92          void main(void)
+  93          {
+  94   1        sys_init();//系统初始化
+  95   1        Init_Rtu_RegHoldingBuf(&str_sys);
+  96   1        rtu_data_init();
+  97   1        win_init();
+  98   1        btn_init();
+  99   1        T5L_HMIslvInit(); //初始化通讯参数
+ 100   1        EA=1;
+ 101   1        Task_Manage_List_Init( );  // 事件任务函数初始化
+ 102   1        while(1)
+ 103   1        {
+ 104   2          Execute_Task_List_RUN();
+ 105   2      
+ 106   2          T5L_HMIslvSub(); //功能：在线更新触摸屏程序
+ 107   2      
+ 108   2        }
+ 109   1      }
+ 110          
+ 111          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    412    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 3   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     48       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
