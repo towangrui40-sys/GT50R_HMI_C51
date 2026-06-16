@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      01/07/2026 11:25:19 PAGE 1   
+C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      06/16/2026 11:48:42 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE FUNC_HANDLER
@@ -62,7 +62,7 @@ line level    source
   51   2              obj->val_temp = 0;
   52   2              obj->timer = 0;
   53   2            break;
-C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      01/07/2026 11:25:19 PAGE 2   
+C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      06/16/2026 11:48:42 PAGE 2   
 
   54   2          default:
   55   2              obj->func_callback = 0;
@@ -126,7 +126,7 @@ line level    source
  113   2            break;
  114   2          default:
  115   2            break;
-C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      01/07/2026 11:25:19 PAGE 3   
+C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      06/16/2026 11:48:42 PAGE 3   
 
  116   2        }
  117   1      }
@@ -190,7 +190,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    CONSTANT SIZE    =     48    ----
    XDATA SIZE       =    180      16
    PDATA SIZE       =   ----    ----
-C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      01/07/2026 11:25:19 PAGE 4   
+C51 COMPILER V9.60.7.0   FUNC_HANDLER                                                      06/16/2026 11:48:42 PAGE 4   
 
    DATA SIZE        =   ----    ----
    IDATA SIZE       =      1    ----

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              06/16/2026 11:48:35 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -54,82 +54,68 @@ line level    source
   43          **********************************************************************/
   44          
   45          /**************************************************
-  46          ´¥ÃþµØÖ·ÉèÖÃÔÚ#include "func_handler.h"
-  47          ÏÔÊ¾±äÁ¿µØÖ·ÔÚ#include "start_win.h"
+  46          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½#include "func_handler.h"
+  47          ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½#include "start_win.h"
   48          
-  49          //µã»÷°´¼ü´¦Àí»Øµ÷º¯Êý
+  49          //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
   50          void btn_click_callback(u16 addr,u16 val)
   51          
   52          **************************************************/
   53          SysDataDef xdata str_sys;
-C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              06/16/2026 11:48:35 PAGE 2   
 
   54          
   55          void Init_Rtu_RegHoldingBuf(SysDataDef* dat)
   56          {
   57   1        memset(&str_sys,0,sizeof(str_sys));
-  58   1        usRegHoldingBuf[ADDR_MOTOR_GET_FWD].dat = (u16 *)&str_sys.mc_para.fwd;
-  59   1        usRegHoldingBuf[ADDR_MOTOR_GET_REV].dat = (u16 *)&str_sys.mc_para.rev;
-  60   1        usRegHoldingBuf[ADDR_MOTOR_GET_RESET].dat = (u16 *)&str_sys.mc_para.reset;
-  61   1        usRegHoldingBuf[ADDR_MOTOR_GET_FAULT].dat = (u16 *)&str_sys.mc_para.fault;
-  62   1        usRegHoldingBuf[ADDR_MOTOR_SET_RUN].dat = (u16 *)&str_sys.mc_para.set_run;
-  63   1        usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&str_sys.mc_para.set_vol;
-  64   1      
-  65   1        usRegHoldingBuf[ADDR_GET_MEMSX].dat = (u16 *)&dat->str_mems.x;
-  66   1        usRegHoldingBuf[ADDR_GET_MEMSY].dat = (u16 *)&dat->str_mems.y;
-  67   1        usRegHoldingBuf[ADDR_GET_MEMSZ].dat = (u16 *)&dat->str_mems.z;
+  58   1        usRegHoldingBuf[ADDR_MOTOR_SET_FWD].dat = (u16 *)&dat->fwd;
+  59   1        usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&dat->set_vol;
+  60   1        usRegHoldingBuf[ADDR_SET_TEMP_CMD].dat = (u16 *)&dat->set_temp_cmd;
+  61   1        usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;   
+  62   1        usRegHoldingBuf[ADDR_NTC_TEMP].dat = (u16 *)&dat->ntc_temp;
+  63   1        
+  64   1        usRegHoldingBuf[ADDR_SET_FEQ].dat = (u16 *)&dat->set_feq;
+  65   1        usRegHoldingBuf[ADDR_DISP_FREQ].dat = (u16 *)&dat->disp_freq;
+  66   1          usRegHoldingBuf[ADDR_DOOR].dat = (u16 *)&dat->door;
+  67   1        usRegHoldingBuf[ADDR_LOCK].dat = (u16 *)&dat->lock;
   68   1      
-  69   1        usRegHoldingBuf[ADDR_TANK1_TEMP].dat = (u16 *)&str_sys.tank1_temp;
-  70   1        usRegHoldingBuf[ADDR_TANK2_TEMP].dat = (u16 *)&str_sys.tank2_temp;
-  71   1        
-  72   1        usRegHoldingBuf[ADDR_TEMP].dat = (u16 *)&str_sys.temprature;
-  73   1        usRegHoldingBuf[ADDR_CUR].dat = (u16 *)&str_sys.current;
-  74   1        usRegHoldingBuf[ADDR_DOOR].dat = (u16 *)&str_sys.door;//
-  75   1        usRegHoldingBuf[ADDR_LOCK].dat = (u16 *)&str_sys.lock;//
-  76   1      
-  77   1        usRegHoldingBuf[ADDR_SET_DC1].dat = (u16 *)&dat->set_dc1;
-  78   1        usRegHoldingBuf[ADDR_SET_DC2].dat = (u16 *)&dat->set_dc2;
-  79   1        usRegHoldingBuf[ADDR_SET_DC3].dat = (u16 *)&dat->set_dc3;
-  80   1        
-  81   1        usRegHoldingBuf[ADDR_SET_AC1].dat = (u16 *)&dat->set_ac1;
-  82   1        usRegHoldingBuf[ADDR_SET_AC2].dat = (u16 *)&dat->set_ac2;
-  83   1        usRegHoldingBuf[ADDR_SET_AC3].dat = (u16 *)&dat->set_ac3;
-  84   1        
-  85   1        usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;
-  86   1          
-  87   1        usRegHoldingBuf[ADDR_SET_LOCK].dat = (u16 *)&dat->set_lock;
-  88   1        usRegHoldingBuf[ADDR_GET_LOCK].dat = (u16 *)&dat->get_lock;
-  89   1      
-  90   1      }
-  91          
-  92          void main(void)
-  93          {
-  94   1        sys_init();//ÏµÍ³³õÊ¼»¯
-  95   1        Init_Rtu_RegHoldingBuf(&str_sys);
-  96   1        rtu_data_init();
-  97   1        win_init();
-  98   1        btn_init();
-  99   1        T5L_HMIslvInit(); //³õÊ¼»¯Í¨Ñ¶²ÎÊý
- 100   1        EA=1;
- 101   1        Task_Manage_List_Init( );  // ÊÂ¼þÈÎÎñº¯Êý³õÊ¼»¯
- 102   1        while(1)
- 103   1        {
- 104   2          Execute_Task_List_RUN();
- 105   2      
- 106   2          T5L_HMIslvSub(); //¹¦ÄÜ£ºÔÚÏß¸üÐÂ´¥ÃþÆÁ³ÌÐò
- 107   2      
- 108   2        }
- 109   1      }
- 110          
- 111          
+  69   1        usRegHoldingBuf[ADDR_SET_LOCK].dat = (u16 *)&dat->set_lock;  //é—¨é”æŽ§åˆ¶
+  70   1        usRegHoldingBuf[ADDR_SET_DC1].dat = (u16 *)&dat->set_dc1;
+  71   1        usRegHoldingBuf[ADDR_SET_DC2].dat = (u16 *)&dat->set_dc2;
+  72   1        usRegHoldingBuf[ADDR_SET_DC3].dat = (u16 *)&dat->set_dc3;
+  73   1      
+  74   1        usRegHoldingBuf[ADDR_SET_AC1].dat = (u16 *)&dat->set_ac1;   //åŽ‹ç¼©æœºé£Žæ‰‡æŽ§åˆ¶
+  75   1        usRegHoldingBuf[ADDR_SET_AC2].dat = (u16 *)&dat->set_ac2;
+  76   1        usRegHoldingBuf[ADDR_SET_AC3].dat = (u16 *)&dat->set_ac3;
+  77   1      
+  78   1      }
+  79          
+  80          void main(void)
+  81          {
+  82   1        sys_init();//ÏµÍ³ï¿½ï¿½Ê¼ï¿½ï¿½
+  83   1        Init_Rtu_RegHoldingBuf(&str_sys);
+  84   1        rtu_data_init();
+  85   1        win_init();
+  86   1        btn_init();
+  87   1        T5L_HMIslvInit(); //ï¿½ï¿½Ê¼ï¿½ï¿½Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½
+  88   1        EA=1;
+  89   1        Task_Manage_List_Init( );  // ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
+  90   1        while(1)
+  91   1        {
+  92   2          Execute_Task_List_RUN();
+  93   2      
+  94   2          T5L_HMIslvSub(); //ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ß¸ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  95   2      
+  96   2        }
+  97   1      }
+  98          
+  99          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    412    ----
-C51 COMPILER V9.60.7.0   MAIN                                                              01/07/2026 11:25:12 PAGE 3   
-
+   CODE SIZE        =    357    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     48       3
+   XDATA SIZE       =     32       3
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

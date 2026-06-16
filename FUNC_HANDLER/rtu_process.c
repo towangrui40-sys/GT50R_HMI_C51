@@ -17,26 +17,23 @@ void RTU_Send_Cmd(u8 index)
 {
 	switch(rtu_structure.cmd[index])
 	{
-		case RTU_RUN_FWD:
-		case RTU_RUN_REV:
 		case RTU_STOP:
 		case RTU_START:
-			str_sys.mc_para.set_run = rtu_structure.cmd_data[index];
-			rtu_protocol_format_wr(ADDR_MOTOR_SET_RUN,1,(u16 *)&rtu_structure.cmd_data[index]);
+			rtu_protocol_format_wr(ADDR_MOTOR_SET_FWD,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;
 		case RTU_SET_VLOTAGE:
 			rtu_protocol_format_wr(ADDR_MOTOR_SET_VOL,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;
-		case RTU_DOOR_LOCK://                                                  //ÃÅËøDC1
+		case RTU_DOOR_LOCK://                                                  //ï¿½ï¿½ï¿½ï¿½DC1
 		case RTU_DOOR_UNLOCK://
 			rtu_protocol_format_wr(ADDR_SET_DC1,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;		
-		case RTU_DCFAN_RUN:   //·çÉÈ¿ªÊ¼×ª¶¯
-		case RTU_DCFAN_STOP:   	 //·çÉÈÍ£Ö¹   str_sys.set_dc2 = 0;
+		case RTU_DCFAN_RUN:   //ï¿½ï¿½ï¿½È¿ï¿½Ê¼×ªï¿½ï¿½
+		case RTU_DCFAN_STOP:   	 //ï¿½ï¿½ï¿½ï¿½Í£Ö¹   str_sys.set_dc2 = 0;
 			rtu_protocol_format_wr(ADDR_SET_DC2,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;
-		case RTU_ACFAN_RUN:   //·çÉÈ¿ªÊ¼×ª¶¯  str_sys.set_ac1 = 0x01;
-		case RTU_ACFAN_STOP:   	 //·çÉÈÍ£Ö¹  			str_sys.set_ac1 = 0;
+		case RTU_ACFAN_RUN:   //ï¿½ï¿½ï¿½È¿ï¿½Ê¼×ªï¿½ï¿½  str_sys.set_ac1 = 0x01;
+		case RTU_ACFAN_STOP:   	 //ï¿½ï¿½ï¿½ï¿½Í£Ö¹  			str_sys.set_ac1 = 0;
 			rtu_protocol_format_wr(ADDR_SET_AC1,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;
 		case RTU_SET_TEMP:
@@ -46,7 +43,7 @@ void RTU_Send_Cmd(u8 index)
 		rtu_protocol_format_wr(ADDR_SET_LOCK,1,(u16 *)&rtu_structure.cmd_data[index]);
 			break;
 		case RTU_IDlE:
-			rtu_protocol_format_rd(ADDR_MOTOR_GET_FWD,ADDR_HREG_TOTAL);
+			rtu_protocol_format_rd(ADDR_MOTOR_SET_FWD,ADDR_HREG_TOTAL);
 			break;		
 		default:
 			break;

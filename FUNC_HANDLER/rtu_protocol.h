@@ -9,7 +9,7 @@
 enum RTU_MOTOR_ADDR
 {
 /////////////motor work parameters////////
-	ADDR_MOTOR_GET_FWD=0,
+	ADDR_MOTOR_SET_FWD=0,
 	ADDR_MOTOR_SET_VOL,	
 	
 	ADDR_SET_TEMP_CMD,
@@ -23,7 +23,7 @@ enum RTU_MOTOR_ADDR
 	ADDR_LOCK,
 	
 	ADDR_SET_LOCK,
-	ADDR_SET_DC1
+	ADDR_SET_DC1,
 	ADDR_SET_DC2,
 	ADDR_SET_DC3,
 	ADDR_SET_AC1,

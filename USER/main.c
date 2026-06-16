@@ -55,7 +55,7 @@ SysDataDef xdata str_sys;
 void Init_Rtu_RegHoldingBuf(SysDataDef* dat)
 {
 	memset(&str_sys,0,sizeof(str_sys));
-	usRegHoldingBuf[ADDR_MOTOR_GET_FWD].dat = (u16 *)&dat->fwd;
+	usRegHoldingBuf[ADDR_MOTOR_SET_FWD].dat = (u16 *)&dat->fwd;
 	usRegHoldingBuf[ADDR_MOTOR_SET_VOL].dat = (u16 *)&dat->set_vol;
 	usRegHoldingBuf[ADDR_SET_TEMP_CMD].dat = (u16 *)&dat->set_temp_cmd;
 	usRegHoldingBuf[ADDR_SET_TEMP].dat = (u16 *)&dat->set_temp;   

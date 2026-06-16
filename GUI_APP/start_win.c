@@ -6,15 +6,14 @@
 #include "motor_cmd.h"
 #include "main.h"
 
-code const char Software_version[11]={"V4.28"};
+code const char Software_version[11]={"V1.10"};
 code const char modle_version[11]={"--------"};
 Product_TypeDef product_data[PRODUCT_TOTAL]={	 
 // 																1: MM			 		1: SS
 //																2:circle			2: MM
 // 																							3: MM:SS
 //id,product name,	 level		   	cycle	   work_time	   pause_time	   voltage	   current
-{ 0,	"GT300",		  180,1800,	  	 1,99,     1,5999,      1,5999,	    500,3900,   1000,16000},
-{ 0,	"GT50",	  	  900,1800,	  	 1,99,     1,5999,      1,5999,	    980,1850,     65,3500},
+{ 0,	"GT300",    1300,1750,	  	 1,99,     1,5999,      1,5999,	    1300,1750},
 };
 
 
@@ -45,7 +44,7 @@ static u8 win_product_select(u16 page,u16 save);
 
 void win_fresh_model_icon(u16 mode);
 typedef enum{
-	MENU_PAGE = 0,   //²Ëµ¥½çÃæ
+	MENU_PAGE = 0,   //ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½
 	FAC_PAGE1,
 	FAC_PAGE2,
 	FAC_KEYBORD,
@@ -63,7 +62,7 @@ typedef enum{
 	BACK_PAGE,
 }Change_Page_Def;
 
-static int Limit_Sat( int Uint,int U_max, int U_min) //ÏÞÖÆ¸³Öµº¯Êý
+static int Limit_Sat( int Uint,int U_max, int U_min) //ï¿½ï¿½ï¿½Æ¸ï¿½Öµï¿½ï¿½ï¿½ï¿½
 {
 	int Uout;
  	if(Uint<= U_min)
@@ -76,27 +75,27 @@ static int Limit_Sat( int Uint,int U_max, int U_min) //ÏÞÖÆ¸³Öµº¯Êý
 }
 
 
-//µã»÷°´¼ü´¦Àí»Øµ÷º¯Êý
-void btn_click_callback(u16 addr,u16 val)  //´¦ÀíºóÇåÁã
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+void btn_click_callback(u16 addr,u16 val)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	switch(addr)
 	{
 		case BTN_MAIN_PAGE_ADDR:				//Main page button   0x1100 
 				win_main_btn_click_handler(val);
 			break;
-		case BTN_PARA_KEYPAD_ADDR: 		  //²ÎÊýÉèÖÃÊý×Ö°´¼ü
+		case BTN_PARA_KEYPAD_ADDR: 		  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö°ï¿½ï¿½ï¿½
 				win_para_keypad_btn_click_handler(val);
 			break;
-		case BTN_FACTORY_KEYPAD_ADDR: 	//¹¤³§Ä£Ê½Êý×Ö°´¼ü
+		case BTN_FACTORY_KEYPAD_ADDR: 	//ï¿½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½Ö°ï¿½ï¿½ï¿½
 				win_factory_keypad_btn_click_handler(val);
 			break;
-		case BTN_PROG_NUM_SEL_ADDR:    	//³ÌÐòÉèÖÃÒ³Ãæ×óÓÒ·­Ò³
+		case BTN_PROG_NUM_SEL_ADDR:    	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½Ò·ï¿½Ò³
 				win_prog_num_sel_btn_click_handler(val);
 			break;
-		case BTN_PASS_KEYPAD_ADDR:  		//ÃÜÂëÒ³Ãæ 0X1202 
+		case BTN_PASS_KEYPAD_ADDR:  		//ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ 0X1202 
 				win_pass_keypad_btn_click_handler(val);
 			break;
- 		case BTN_FAC_SET_ADDR:	    		//¹¤³§½çÃæ0X1300
+ 		case BTN_FAC_SET_ADDR:	    		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0X1300
 				win_fac_set_btn_click_handler(val);
 			break;
 		
@@ -104,16 +103,16 @@ void btn_click_callback(u16 addr,u16 val)  //´¦ÀíºóÇåÁã
 			break;
 	}
 }
-//±£³Ö°´¼ü´¦Àí»Øµ÷º¯Êý
-void btn_hold_res_callback(u16 addr,u16 val)   //°´Å¥Öµ¸Ä±äÔÙ½øÈë
+//ï¿½ï¿½ï¿½Ö°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+void btn_hold_res_callback(u16 addr,u16 val)   //ï¿½ï¿½Å¥Öµï¿½Ä±ï¿½ï¿½Ù½ï¿½ï¿½ï¿½
 {
 	STR_WIN_TypeDef	*obj = &win_str_data;
 	switch(addr)
 	{
-		case BTN_TEST_MODE_SET_ADDR:		//²ÎÊýÉèÖÃ0X1110
+		case BTN_TEST_MODE_SET_ADDR:		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0X1110
 			win_test_para_btn_hold_handler(val);
 			break;
-		case BTN_PROG_MODE_SET_ADDR:		//³ÌÐòÉèÖÃ0X1112
+		case BTN_PROG_MODE_SET_ADDR:		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0X1112
 			win_prog_para_btn_hold_handler(val);
 			break;
 		case BTN_SET_LIGHT_ADDR:
@@ -155,7 +154,7 @@ void btn_hold_click_callback(u16 addr,u16 val)
 			break;
 	}
 }
-//±£³ÖÊ±¼ä°´¼üµ½Ê±»Øµ÷º¯Êý
+//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä°´ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 void btn_hold_callback(u16 addr,u16 val)
 {
 	STR_WIN_TypeDef	*obj = &win_str_data;
@@ -169,7 +168,7 @@ void btn_hold_callback(u16 addr,u16 val)
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////¹¦ÄÜµ÷ÓÃ×Óº¯Êý/////////////////////////////////////////////////////////////////
+//////////////////////////////////ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½/////////////////////////////////////////////////////////////////
 
 static void win_calc_function(void)
 {
@@ -182,59 +181,9 @@ static void win_calc_function(void)
 	temp = win_str_data.k_factor*product_data[win_str_data.product_id].para1.min;
 	win_str_data.b_factor = product_data[win_str_data.product_id].vol_min-temp;
 }
-//load bar display 
-static void win_main_bar_disp_handler(u16 percent)
-{
-	SHAPE_DATA_AREA_COPY xdata  shape_copy;
-	#define X_S 10
-	#define Y_S 314
-	#define Y_E 347
-	float i;
-	STR_WIN_TypeDef	*obj = &win_str_data;
-	
-	i = percent;
-	i = 4.66*i;
-	i = i+10;
-	shape_copy.vp = SHAPE_LOAD_BAR_ADDR;
-	shape_copy.shape_type = SHAPE_TYPE_AREA_COPY;
-	shape_copy.shape_num = 1;
-	shape_copy.pic_id = 14;
-	shape_copy.xs = X_S;
-	shape_copy.ys = Y_S;
-	shape_copy.xe = (u16)i;
-	shape_copy.ye = Y_E;
-	shape_copy.x = X_S;
-	shape_copy.y = Y_S;
-	sys_draw_shape((u16*)&shape_copy);	
-}
-/*****************Ë¢ÐÂ¸ºÔØÌõ**********************/
-void win_fresh_load_bar(u16 current)
-{
-	static u16 load_fresh_ratio;
-	float load_pencent;
 
-	STR_WIN_TypeDef	*obj = &win_str_data;
-	if(load_fresh_ratio >0) load_fresh_ratio--;	
-	if(load_fresh_ratio ==0)
-	{
-		load_fresh_ratio = 200;//5hz
-		if(win_str_data.start == 1)
-		{
-			if(current < product_data[win_str_data.product_id].cur_min) current = product_data[win_str_data.product_id].cur_min;
-			load_pencent = current - product_data[win_str_data.product_id].cur_min;
-			
-			load_pencent = load_pencent/(product_data[win_str_data.product_id].cur_max -product_data[win_str_data.product_id].cur_min)*100; 
-			if(load_pencent >100) load_pencent= 100;
-		}
-		else 
-		{
-			load_pencent = 0;
-		}
-		win_main_bar_disp_handler(load_pencent);	
-	}	
-}
 
-u16 const page_reg[16]={						//ÖÐÎÄ½çÃæ
+u16 const page_reg[16]={						//ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½
 	{ 1},  //MENU_PAGE
 	{ 3},  //FAC_PAGE1
 	{ 4},  //FAC_PAGE2
@@ -253,7 +202,7 @@ u16 const page_reg[16]={						//ÖÐÎÄ½çÃæ
 	};
 
 
-static void win_change_page(u16 page)    //ÇÐ»»´°¿ÚÒ³Ãæ
+static void win_change_page(u16 page)    //ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½
 {
 	u16 xdata temp;
 
@@ -280,12 +229,12 @@ static void win_change_page(u16 page)    //ÇÐ»»´°¿ÚÒ³Ãæ
 			break;
 
 		case PROGRAM_PAGE:
-			win_disp_level(SET_TIMER,win_str_data.set_level);   //ÏÔÊ¾ÉèÖÃÖµ
+			win_disp_level(SET_TIMER,win_str_data.set_level);   //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Öµ
 			win_disp_cycle(SET_TIMER,win_str_data.set_cycle);
 			win_disp_run_time(SET_TIMER,win_str_data.set_run_time);
 			win_disp_pause_time(SET_TIMER,win_str_data.set_pause_time);
 			
-			win_disp_level(PROG_TIMER,win_str_data.prog_level); //ÏÔÊ¾³ÌÐòÖµ
+			win_disp_level(PROG_TIMER,win_str_data.prog_level); //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Öµ
 			win_disp_cycle(PROG_TIMER,win_str_data.prog_cycle);
 			win_disp_run_time(PROG_TIMER,win_str_data.prog_run_time);
 			win_disp_pause_time(PROG_TIMER,win_str_data.prog_pause_time);
@@ -297,7 +246,7 @@ static void win_change_page(u16 page)    //ÇÐ»»´°¿ÚÒ³Ãæ
 	//goto page
 	sys_disp_page(temp);
 }
-/*********************Ñ¡ÔñÒÇÆ÷ÐÍºÅ**************************/
+/*********************Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íºï¿½**************************/
 static u8 win_product_select(u16 page,u16 save)
 {
 	u16 xdata index_id,temp,no;
@@ -314,18 +263,18 @@ static u8 win_product_select(u16 page,u16 save)
 	if(save ==1)
 	{
 		sys_read_vp(BTN_FAC_SEL_ADDR,(u8*)&no,2);
-		if(no == 1) no=0;   			//Ñ¡ÔñÒÇÆ÷Ò³Ãæ   µÚ1¿î
-		else if(no == 2) no=1;		//µÚ2¿î
-		else if(no ==4) no = 2;		//µÚ3¿î
-		else if(no ==8) no =3;		//µÚ4¿î
-		else if(no == 16) no =4;	//µÚ5¿î
+		if(no == 1) no=0;   			//Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½   ï¿½ï¿½1ï¿½ï¿½
+		else if(no == 2) no=1;		//ï¿½ï¿½2ï¿½ï¿½
+		else if(no ==4) no = 2;		//ï¿½ï¿½3ï¿½ï¿½
+		else if(no ==8) no =3;		//ï¿½ï¿½4ï¿½ï¿½
+		else if(no == 16) no =4;	//ï¿½ï¿½5ï¿½ï¿½
 		else no =0;
 		no = (page-1)*5+no;
 		if(no>=PRODUCT_TOTAL) return 1;
 		win_str_data.product_id = no;
 		norflash_write(SYS_PRUDUCT_OFFSET,(u8*)&win_str_data.product_id,2);
 		
-		save_flag1 = 0;  //ÇÐ»»»úÐÍÊ±£¬²»¶ÁÈ¡±£´æµÄÊý¾Ý
+		save_flag1 = 0;  //ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		norflash_write(SAVE_FLAG,(u8 *)&save_flag1,2);
 		
 		return 0;
@@ -358,8 +307,6 @@ static u8 win_product_select(u16 page,u16 save)
 			sys_write_vp(DATA_PRODUCT_P1MAX1_ADDR+i*2,(u8*)&product_data[index_id].para1.max,2);	
 			sys_write_vp(DATA_PRODUCT_VOLMIN1_ADDR+i*2,(u8*)&product_data[index_id].vol_min,2);	
 			sys_write_vp(DATA_PRODUCT_VOLMAX1_ADDR+i*2,(u8*)&product_data[index_id].vol_max,2);
-			sys_write_vp(DATA_PRODUCT_CURMIN1_ADDR+i*2,(u8*)&product_data[index_id].cur_min,2);	
-			sys_write_vp(DATA_PRODUCT_CURMAX1_ADDR+i*2,(u8*)&product_data[index_id].cur_max,2);	
 			sys_write_vp(STRING_PRODUCT_NAME1_ADDR+i*0x100,(u8*)product_data[index_id].name,sizeof(product_data[index_id].name));		
 		}
 		else
@@ -370,8 +317,6 @@ static u8 win_product_select(u16 page,u16 save)
 			sys_write_vp(DATA_PRODUCT_P1UNIT1_ADDR+i*2,(u8*)&temp,2);
 			sys_write_vp(DATA_PRODUCT_VOLMIN1_ADDR+i*2,(u8*)&temp,2);	
 			sys_write_vp(DATA_PRODUCT_VOLMAX1_ADDR+i*2,(u8*)&temp,2);	
-			sys_write_vp(DATA_PRODUCT_CURMIN1_ADDR+i*2,(u8*)&temp,2);	
-			sys_write_vp(DATA_PRODUCT_CURMAX1_ADDR+i*2,(u8*)&temp,2);	
 			sys_write_vp(DATA_PRODUCT_CCW1_ADDR+i*2,(u8*)&temp,2);				
 			sys_write_vp(STRING_PRODUCT_NAME1_ADDR+i*0x100,"--",2);				
 		}	
@@ -406,9 +351,9 @@ static void win_load_setpara(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////ÊÂ¼þ´¦Àíº¯Êý//////////////////////////////////////////////////////////
+//////////////////////////////////////////ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½//////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//´¦ÀíÖ÷½çÃæ°´Å¥µã»÷ÊÂ¼þ	
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ°´Å¥ï¿½ï¿½ï¿½ï¿½Â¼ï¿½	
 static void win_main_btn_click_handler(u16 btn_val)
 {
 	#define  BTN_VAL_START	     0X01    //start
@@ -430,7 +375,7 @@ static void win_main_btn_click_handler(u16 btn_val)
 	switch(btn_val)
 	{
 		case BTN_VAL_START:     //Page1:Push Start
-			if(win_str_data.pause == 1)		//pause state  ÔÝÍ£×´Ì¬
+			if(win_str_data.pause == 1)		//pause state  ï¿½ï¿½Í£×´Ì¬
 			{
 				win_str_data.start = 1;
 				win_str_data.pause = 0;
@@ -440,7 +385,7 @@ static void win_main_btn_click_handler(u16 btn_val)
 				win_change_page(WORK_CONFIRM_PAGE);				// goto set work parameters page(Popup Window)
 			}
 			break;
-		case BTN_VAL_CONFIRM://Page13:********************  µ¯´°½çÃæÈ·¶¨Æô¶¯
+		case BTN_VAL_CONFIRM://Page13:********************  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				win_str_data.start = 1;
 				win_str_data.pause = 0;
 				win_change_page(WORK_PAGE);
@@ -481,7 +426,7 @@ static void win_main_btn_click_handler(u16 btn_val)
 				win_change_page(MENU_PAGE);
 			break;
 		case BTN_VAL_MENU:
-				if((win_str_data.pause == 1)||(win_str_data.start != 0)) break;  //Èç¹ûÊÇÔÝÍ£×´Ì¬»òÕß²»ÊÇÍ£Ö¹×´Ì¬
+				if((win_str_data.pause == 1)||(win_str_data.start != 0)) break;  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£×´Ì¬ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½Í£Ö¹×´Ì¬
 					win_change_page(MENU_PAGE);
 			break;
 		case BTN_VAL_INFO:
@@ -500,16 +445,16 @@ static void win_main_btn_click_handler(u16 btn_val)
 
 
 #define  BTN_VAL_NO	   			0X1C00
-#define  BTN_VAL_YES	   	  0X1400 //µ¯´°¡Ì
-#define  BTN_VAL_RETURN			0X1000 //·µ»Ø
-#define  BTN_VAL_UPSET	 		0X0C00 //³ÌÐòÉèÖÃÉÏ´«²ÎÊý
-#define  BTN_VAL_OVERSET  	0X0800 //¸²¸Ç³ÌÐò
-#define  BTN_VAL_TOSET	    0X0400 //Ö÷Ò³ÃæÑ¡Ôñ¿ò'
+#define  BTN_VAL_YES	   	  0X1400 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+#define  BTN_VAL_RETURN			0X1000 //ï¿½ï¿½ï¿½ï¿½
+#define  BTN_VAL_UPSET	 		0X0C00 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½
+#define  BTN_VAL_OVERSET  	0X0800 //ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½
+#define  BTN_VAL_TOSET	    0X0400 //ï¿½ï¿½Ò³ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½'
 
-#define  BTN_VAL_SEL_CYCLE		    	0X04   //×ÜÊ±¼ä   total time
-#define  BTN_VAL_SEL_PAUSE_TIME			0X03	 //ÔÝÍ£Ê±¼ä pause time
-#define  BTN_VAL_SEL_RUN_TIME		  	0X02   //ÔËÐÐÊ±¼ä rum time
-#define  BTN_VAL_SEL_LEVEL	        0X01   //×ªËÙ/Õñ·ù
+#define  BTN_VAL_SEL_CYCLE		    	0X04   //ï¿½ï¿½Ê±ï¿½ï¿½   total time
+#define  BTN_VAL_SEL_PAUSE_TIME			0X03	 //ï¿½ï¿½Í£Ê±ï¿½ï¿½ pause time
+#define  BTN_VAL_SEL_RUN_TIME		  	0X02   //ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ rum time
+#define  BTN_VAL_SEL_LEVEL	        0X01   //×ªï¿½ï¿½/ï¿½ï¿½ï¿½
 void disp_input_icon(u16 btn_val)
 {
 	sys_write_vp(ICON_INPUT1_ADDR,(u8 *)&win_str_data.input_disp1,4);
@@ -547,8 +492,8 @@ void disp_input_icon(u16 btn_val)
 	}
 }
 /********************************************************
-º¯ÊýÃû³Æ£ºwin_work_para_btn_hold_handler
-º¯Êý¹¦ÄÜ£º²ÎÊýÉèÖÃ´¦Àíº¯Êý
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½win_work_para_btn_hold_handler
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_test_para_btn_hold_handler(u16 btn_val)
 {
@@ -560,7 +505,7 @@ static void win_test_para_btn_hold_handler(u16 btn_val)
 		else if(win_str_data.set_level < product_data[win_str_data.product_id].para1.min) win_str_data.set_level = product_data[win_str_data.product_id].para1.min;	
 		win_disp_level(SET_TIMER,win_str_data.set_level);					
 	}
-	else if(win_str_data.paras_sel == BTN_VAL_SEL_CYCLE)   //×ÜÔËÐÐÊ±¼ä
+	else if(win_str_data.paras_sel == BTN_VAL_SEL_CYCLE)   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 	{
 		if(win_str_data.set_cycle > product_data[win_str_data.product_id].para2.max) win_str_data.set_cycle = product_data[win_str_data.product_id].para2.max;
 		else if(win_str_data.set_cycle < product_data[win_str_data.product_id].para2.min) win_str_data.set_cycle = product_data[win_str_data.product_id].para2.min;
@@ -656,12 +601,12 @@ static void win_test_para_btn_hold_handler(u16 btn_val)
 		
 				win_change_page(TEST_CONFIRM_PAGE);
 			break;
-		case BTN_VAL_YES:    	 //Pop up¡Ì save and upset
+		case BTN_VAL_YES:    	 //Pop upï¿½ï¿½ save and upset
 				memcpy((u8 *)&win_str_data.use_level,(u8 *)&win_str_data.set_level,8);		  
 				win_save_prog_paras(PROG_LEVEL_OFFSET,(u8*)&win_str_data.use_level,4);
 				win_change_page(TEST_PAGE);
 			break;
-		case BTN_VAL_NO:       //Pop up¡Á
+		case BTN_VAL_NO:       //Pop upï¿½ï¿½
 				win_change_page(TEST_PAGE);
 			break;
 			
@@ -671,8 +616,8 @@ static void win_test_para_btn_hold_handler(u16 btn_val)
 }
 
 /********************************************************
-º¯ÊýÃû³Æ£ºwin_prog_para_btn_hold_handler
-º¯Êý¹¦ÄÜ£º³ÌÐòÉèÖÃ´¦Àíº¯Êý
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½win_prog_para_btn_hold_handler
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_prog_para_btn_hold_handler(u16 btn_val)
 {
@@ -749,17 +694,17 @@ static void win_prog_para_btn_hold_handler(u16 btn_val)
 		case BTN_VAL_NO:
 				win_change_page(PROGRAM_PAGE);	
 			break;
-		case BTN_VAL_UPSET://ÉÏ´«download program parameters to current parameters
+		case BTN_VAL_UPSET://ï¿½Ï´ï¿½download program parameters to current parameters
 				win_str_data.test_mode = 1;
 				win_fresh_model_icon(win_str_data.test_mode);
 		
 				norflash_write(SYS_LAST_PROG_OFFSET,(u8*)&win_str_data.prog_grp,2);
 				sys_write_vp(ARTNUM_MAIN_PROG_NUM_ADDR,(u8*)&win_str_data.prog_grp,1);
 		
-				memcpy((u8 *)&win_str_data.set_level,(u8 *)&win_str_data.prog_level,8);  //³ÌÐòÖµÉÏ´«µ½ÉèÖÃÖµ
-				memcpy((u8 *)&win_str_data.use_level,(u8 *)&win_str_data.prog_level,8);  //ÔËÐÐÖµ=ÉèÖÃÖµ
+				memcpy((u8 *)&win_str_data.set_level,(u8 *)&win_str_data.prog_level,8);  //ï¿½ï¿½ï¿½ï¿½Öµï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+				memcpy((u8 *)&win_str_data.use_level,(u8 *)&win_str_data.prog_level,8);  //ï¿½ï¿½ï¿½ï¿½Öµ=ï¿½ï¿½ï¿½ï¿½Öµ
 		
-				win_disp_level(SET_TIMER,win_str_data.set_level);      		    //³ÌÐòÉèÖÃÒ³ÃæÉèÖÃ²ÎÊý¿òÏÔÊ¾
+				win_disp_level(SET_TIMER,win_str_data.set_level);      		    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 				win_disp_cycle(SET_TIMER,win_str_data.set_cycle);
 				win_disp_run_time(SET_TIMER,win_str_data.set_run_time);
 				win_disp_pause_time(SET_TIMER,win_str_data.set_pause_time);
@@ -771,11 +716,11 @@ static void win_prog_para_btn_hold_handler(u16 btn_val)
 }
 
 
-#define  BTN_VAL_ACC	    0X02 //Éý
-#define  BTN_VAL_DEC	    0X01 //½µ
+#define  BTN_VAL_ACC	    0X02 //ï¿½ï¿½
+#define  BTN_VAL_DEC	    0X01 //ï¿½ï¿½
 /********************************************************
-º¯ÊýÃû³Æ£ºwin_test_mode_btn_click_handler
-º¯Êý¹¦ÄÜ£º³ÌÐòÉèÖÃÒ³Ãæ¾Å×éÑ¡Ôñ³ÌÐò
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½win_test_mode_btn_click_handler
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_prog_num_sel_btn_click_handler(u16 btn_val)
 {
@@ -806,8 +751,8 @@ static void win_prog_num_sel_btn_click_handler(u16 btn_val)
 }
 
 /********************************************************
-º¯ÊýÃû³Æ£ºwin_para_keypad_btn_click_handler
-º¯Êý¹¦ÄÜ£ºÊý×Ö¼üÅÌ´¦Àíº¯Êý
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½win_para_keypad_btn_click_handler
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_para_keypad_btn_click_handler(u16 btn_val)
 {
@@ -868,7 +813,7 @@ static void win_para_keypad_btn_click_handler(u16 btn_val)
 /*******************************RUN_TIME***********************************/			
 		case BTN_VAL_SEL_RUN_TIME:
 			temp = win_str_data.set_run_time;
-			if(btn_val<BTN_VAL_cancel) //***********Êý×Ö°´¼ü************
+			if(btn_val<BTN_VAL_cancel) //***********ï¿½ï¿½ï¿½Ö°ï¿½ï¿½ï¿½************
 			{
 				if(btn_val == 10) btn_val =0;
 				if(win_str_data.set_run_time_bit==4) temp += btn_val*600;// decade min
@@ -896,7 +841,7 @@ static void win_para_keypad_btn_click_handler(u16 btn_val)
 /*****************************PAUSE_TIME***********************************/		
 		case BTN_VAL_SEL_PAUSE_TIME:
 			temp = win_str_data.set_pause_time;			
-			if(btn_val < BTN_VAL_cancel)      //***********Êý×Ö°´¼ü************
+			if(btn_val < BTN_VAL_cancel)      //***********ï¿½ï¿½ï¿½Ö°ï¿½ï¿½ï¿½************
 			{
 				if(btn_val == 10) btn_val =0;
 				if(win_str_data.set_pause_time_bit==4) temp += btn_val*600;// decade min
@@ -927,13 +872,13 @@ static void win_para_keypad_btn_click_handler(u16 btn_val)
 }
 /********************************************************
 win_pass_keypad_btn_click_handler
-º¯Êý¹¦ÄÜ£ººóÌ¨ÃÜÂëÊý×Ö¼üÅÌ´¦Àíº¯Êý
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_pass_keypad_btn_click_handler(u16 btn_val)
 {
 	u16 xdata temp;
 	temp = win_str_data.passcode;
-	if(btn_val == 0X0C)   //µ¯´°¡Ì
+	if(btn_val == 0X0C)   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	{
 		win_str_data.used_time_h = 0;
 		win_str_data.used_time_l = 0;
@@ -943,14 +888,14 @@ static void win_pass_keypad_btn_click_handler(u16 btn_val)
 		win_str_data.used_time = win_str_data.used_time_h;
 		win_str_data.used_time <<= 16;
 		win_str_data.used_time |= win_str_data.used_time_l;
-		win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±Êý
+		win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±ï¿½ï¿½
 	
-		sys_write_vp(ARTNUM_UT_ADDR,(u8*)&win_str_data.disp_time,1);	 //×ÜÔËÐÐÊ±¼äÇåÁã
+		sys_write_vp(ARTNUM_UT_ADDR,(u8*)&win_str_data.disp_time,1);	 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		win_str_data.passcode = 0;
 		
 		win_change_page(PASSWORD_PAGE);
 	}
-	if(btn_val == 0X0D)   //µ¯´° ¡Á
+	if(btn_val == 0X0D)   //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 	{
 		win_change_page(PASSWORD_PAGE);
 	}
@@ -975,13 +920,13 @@ static void win_pass_keypad_btn_click_handler(u16 btn_val)
 		sys_write_vp(ARTNUM_PASSCODE_ADDR,(u8*)&win_str_data.passcode,2);			
 	}
 	
-	if(temp == 1010)            //¸´Î»ÃÜÂë
+	if(temp == 1010)            //ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½
 	{
 		win_str_data.passcode = 0;
 		sys_write_vp(ARTNUM_PASSCODE_ADDR,(u8*)&win_str_data.passcode,2);	
 		win_change_page(PASSWORD_CONFIRM_PAGE);
 	}
-	else if(temp == 5973)      //ºóÌ¨ÃÜÂë
+	else if(temp == 5973)      //ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½
 	{
 		win_str_data.product_cpage = 1;
 		win_product_select(win_str_data.product_cpage,0);
@@ -992,8 +937,8 @@ static void win_pass_keypad_btn_click_handler(u16 btn_val)
 }
 
 /********************************************************
-º¯ÊýÃû£ºwin_light_set_btn_hold_handler()
-º¯Êý¹¦ÄÜ£ºÁÁ¶ÈÉèÖÃ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½win_light_set_btn_hold_handler()
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_light_set_btn_hold_handler(u16 btn_val)
 {
@@ -1002,8 +947,8 @@ static void win_light_set_btn_hold_handler(u16 btn_val)
 	norflash_write(SYS_LIGHT_OFFSET,(u8 *)&win_str_data.light,2);	
 }
 /********************************************************
-º¯ÊýÃû£ºwin_language_set_btn_hold_handler()
-º¯Êý¹¦ÄÜ£ºÓïÑÔÉèÖÃ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½win_language_set_btn_hold_handler()
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_language_set_btn_hold_handler(u16 btn_val)
 {
@@ -1011,8 +956,8 @@ static void win_language_set_btn_hold_handler(u16 btn_val)
 	norflash_write(SYS_LANGUAGE_OFFSET,(u8 *)&win_str_data.language,2);	
 }
 /********************************************************
-º¯ÊýÃû£ºwin_buzz_set_btn_hold_handler()
-º¯Êý¹¦ÄÜ£º·äÃùÆ÷ÉèÖÃ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½win_buzz_set_btn_hold_handler()
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_buzz_set_btn_hold_handler(u16 btn_val)
 {
@@ -1040,21 +985,21 @@ static void win_buzz_set_btn_hold_handler(u16 btn_val)
 
 
 /********************************************************
-º¯ÊýÃû£ºwin_fac_set_btn_click_handler(u16 btn_val)
-º¯Êý¹¦ÄÜ£º¹¤³§½çÃæ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½win_fac_set_btn_click_handler(u16 btn_val)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *********************************************************/
 static void win_fac_set_btn_click_handler(u16 btn_val)
 {
 	u16 xdata temp;
 	STR_WIN_TypeDef	*obj = &win_str_data;
 	win_str_data.factory_sel = 0;
-	switch(btn_val)//ºóÌ¨½çÃæ0X1300
+	switch(btn_val)//ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½0X1300
 	{
-		case BTN_PAGE1_DEV://dec  ×ó
+		case BTN_PAGE1_DEV://dec  ï¿½ï¿½
 			if(win_str_data.product_cpage>1)	win_str_data.product_cpage--;
 			win_product_select(win_str_data.product_cpage,0);			
 			break;
-		case BTN_PAGE1_ADD://add  ÓÒ
+		case BTN_PAGE1_ADD://add  ï¿½ï¿½
 			if(win_str_data.product_cpage<(PRODUCT_TOTAL-1)/5+1)	win_str_data.product_cpage++;
 			win_product_select(win_str_data.product_cpage,0);
 			break;
@@ -1230,12 +1175,12 @@ static void win_factory_keypad_btn_click_handler(u16 btn_val)
 }
 
 /********************************************************
-º¯ÊýÃû³Æ£ºvoid win_save_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
-º¯Êý¹¦ÄÜ£º´æ´¢²ÎÊý
-º¯ÊýÄÚÈÝ£º
-u16 offaddr   flashÆðÊ¼µØÖ·
-u8 *var_addr  ±äÁ¿µØÖ·
-u16 len       ±äÁ¿³¤¶È 
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½void win_save_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½
+u16 offaddr   flashï¿½ï¿½Ê¼ï¿½ï¿½Ö·
+u8 *var_addr  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+u16 len       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 *********************************************************/
 void win_save_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
 {
@@ -1253,12 +1198,12 @@ void win_save_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
 }
 
 /********************************************************
-º¯ÊýÃû³Æ£ºvoid win_load_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
-º¯Êý¹¦ÄÜ£º¶ÁÈ¡²ÎÊý
-º¯ÊýÄÚÈÝ£º
-u16 offaddr   flashÆðÊ¼µØÖ·
-u8 *var_addr  ±äÁ¿µØÖ·
-u16 len       ±äÁ¿³¤¶È 
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½void win_load_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½
+u16 offaddr   flashï¿½ï¿½Ê¼ï¿½ï¿½Ö·
+u8 *var_addr  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+u16 len       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 *********************************************************/
 
 void win_load_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
@@ -1305,7 +1250,7 @@ void win_load_prog_paras(u16 offaddr,u8 *var_addr,u16 len)
 }
 
 
-void win_disp_level(u16 ch,u16 val)   //ÏÔÊ¾
+void win_disp_level(u16 ch,u16 val)   //ï¿½ï¿½Ê¾
 {
 	if(ch & MAIN_TIMER)
 	{
@@ -1322,21 +1267,21 @@ void win_disp_level(u16 ch,u16 val)   //ÏÔÊ¾
 }
 
 /******************************************************************************************
-º¯Êý£ºvoid win_disp_cycle(u16 ch,u16 val)
-º¯Êý¹¦ÄÜ£ºÏÔÊ¾×ÜÊ±¼ä																														
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½void win_disp_cycle(u16 ch,u16 val)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê±ï¿½ï¿½																														
 *******************************************************************************************/
 
-void win_disp_cycle(u16 ch,u16 val)  //ÏÔÊ¾×ÜÊ±¼ä »òÕßÑ­»·´ÎÊý
+void win_disp_cycle(u16 ch,u16 val)  //ï¿½ï¿½Ê¾ï¿½ï¿½Ê±ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	u16 xdata h_dat;
 	u16 xdata l_dat;
 
-	if(ch & MAIN_TIMER)  //Ö÷Ò³Ãæ
+	if(ch & MAIN_TIMER)  //ï¿½ï¿½Ò³ï¿½ï¿½
 	{
-		h_dat = win_str_data.use_cycle - val+1;	//ÔËÐÐ´ÎÊý´Ó1¿ªÊ¼
+		h_dat = win_str_data.use_cycle - val+1;	//ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½Ê¼
 		l_dat = win_str_data.use_cycle;
 	}
-	else  //ÆäËûÒ³Ãæ
+	else  //ï¿½ï¿½ï¿½ï¿½Ò³ï¿½ï¿½
 	{
 		l_dat = val;
 	}
@@ -1357,10 +1302,10 @@ void win_disp_cycle(u16 ch,u16 val)  //ÏÔÊ¾×ÜÊ±¼ä »òÕßÑ­»·´ÎÊý
 }
 
 /******************************************************************************************
-º¯Êý£ºvoid win_disp_run_time(u16 ch,u16 val)
-º¯Êý¹¦ÄÜ£ºÏÔÊ¾ÔËÐÐÊ±¼ä																														
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½void win_disp_run_time(u16 ch,u16 val)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½																														
 *******************************************************************************************/
-void win_disp_run_time(u16 ch,u16 val)		//ÏÔÊ¾ÔËÐÐÊ±¼ä
+void win_disp_run_time(u16 ch,u16 val)		//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 {
 	u16 xdata h_dat;
 	u16 xdata l_dat;
@@ -1385,10 +1330,10 @@ void win_disp_run_time(u16 ch,u16 val)		//ÏÔÊ¾ÔËÐÐÊ±¼ä
 	}
 }
 /******************************************************************************************
-º¯Êý£ºvoid win_disp_pause_time(u16 ch,u16 val)
-º¯Êý¹¦ÄÜ£ºÏÔÊ¾ÔÝÍ£Ê±¼ä																														
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½void win_disp_pause_time(u16 ch,u16 val)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Í£Ê±ï¿½ï¿½																														
 *******************************************************************************************/
-void win_disp_pause_time(u16 ch,u16 val)  //ÏÔÊ¾ÔÝÍ£Ê±¼ä
+void win_disp_pause_time(u16 ch,u16 val)  //ï¿½ï¿½Ê¾ï¿½ï¿½Í£Ê±ï¿½ï¿½
 {
 	u16 xdata h_dat;
 	u16 xdata l_dat;
@@ -1415,10 +1360,10 @@ void win_disp_pause_time(u16 ch,u16 val)  //ÏÔÊ¾ÔÝÍ£Ê±¼ä
 //****************************************************************************************
 u16 win_sec_timer_handle(u16* stage)
 {
-	u16 xdata ret = 0;//·µ»ØÖµ
+	u16 xdata ret = 0;//ï¿½ï¿½ï¿½ï¿½Öµ
 	if(*stage == 0)//run stage
 	{
-		win_str_data.start = 1;//ÔËÐÐÍ¼±ê
+		win_str_data.start = 1;//ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 		if(win_str_data.disp_run_time > 0)win_str_data.disp_run_time--;
 		if(win_str_data.disp_run_time == 0)
 		{
@@ -1429,12 +1374,12 @@ u16 win_sec_timer_handle(u16* stage)
 	}
 	else if(*stage == 1)//pause stage
 	{
-		win_str_data.start = 2;//ÔÝÍ£Í¼±ê
+		win_str_data.start = 2;//ï¿½ï¿½Í£Í¼ï¿½ï¿½
 		if(win_str_data.disp_pause_time > 0)win_str_data.disp_pause_time--;
 		if(win_str_data.disp_pause_time == 0)
 		{
 			win_str_data.disp_pause_time = win_str_data.use_pause_time; 
-			if(win_str_data.disp_cycle > 0)  //Ñ­»·´ÎÊý
+			if(win_str_data.disp_cycle > 0)  //Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				win_str_data.disp_cycle--;				
 			*stage = 0;
 			ret= 1;  //return2 start
@@ -1452,8 +1397,8 @@ u16 win_sec_timer_handle(u16* stage)
 	return ret;
 }
 /******************************************************************************************
-º¯Êý£ºvoid win_fresh_window(SysDataDef *sys)
-º¯Êý¹¦ÄÜ£ºË¢ÐÂ´°¿ÚÍ¼±ê																														
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½void win_fresh_window(SysDataDef *sys)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½Ë¢ï¿½Â´ï¿½ï¿½ï¿½Í¼ï¿½ï¿½																														
 *******************************************************************************************/
 void win_fresh_window(SysDataDef *sys)
 {
@@ -1462,19 +1407,18 @@ void win_fresh_window(SysDataDef *sys)
 	else 
 		win_str_data.door_warning = 0;
 	
-	sys_write_vp(ICON_DOOR_ADDR,(u8*)&win_str_data.door_warning,1);   //0ÎÞÍ¼±ê ÃÅ¹Ø 1ÓÐÍ¼±ê ÃÅ¿ª
+	sys_write_vp(ICON_DOOR_ADDR,(u8*)&win_str_data.door_warning,1);   //0ï¿½ï¿½Í¼ï¿½ï¿½ ï¿½Å¹ï¿½ 1ï¿½ï¿½Í¼ï¿½ï¿½ ï¿½Å¿ï¿½
 	sys_write_vp(ICON_START_ADDR,(u8*)&win_str_data.start,1);
 	sys_write_vp(ICON_PAUSE_ADDR,(u8*)&win_str_data.pause,1);
 
-	win_fresh_load_bar(sys->current);
 	//fresh main page timer block
 	win_fresh_timer_block();
 	//fresh load bar
 
 }
 /******************************************************************************************
-º¯Êý£ºvoid win_fresh_model_icon(SysDataDef *sys)
-º¯Êý¹¦ÄÜ£ºË¢ÐÂ´°¿ÚÄ£Ê½Í¼±ê																														
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½void win_fresh_model_icon(SysDataDef *sys)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½Ë¢ï¿½Â´ï¿½ï¿½ï¿½Ä£Ê½Í¼ï¿½ï¿½																														
 *******************************************************************************************/
 void win_fresh_model_icon(u16 mode)
 {
@@ -1495,10 +1439,10 @@ void win_fresh_model_icon(u16 mode)
 	}
 }		
 /******************************************************************************************
-º¯Êý£ºu16 win_level_trans_volt(u16 level)
-º¯Êý¹¦ÄÜ£º¼ÆËãÊä³öµçÑ¹Öµ																																		
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½u16 win_level_trans_volt(u16 level)
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹Öµ																																		
 *******************************************************************************************/
-u16 win_level_trans_volt(u16 level)       //¼ÆËãµçÑ¹Öµ
+u16 win_level_trans_volt(u16 level)       //ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹Öµ
 {
 	float temp;
 	STR_WIN_TypeDef	*obj = &win_str_data;
@@ -1512,7 +1456,7 @@ u16 win_level_trans_volt(u16 level)       //¼ÆËãµçÑ¹Öµ
 
 	return (u16)temp;
 }
-/*************Ë¢ÐÂÔËÐÐÊ±¼ä************************/
+/*************Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½************************/
 void win_fresh_timer_block(void)
 {
 	static u16 timer_fresh_ratio;
@@ -1531,7 +1475,7 @@ void win_fresh_timer_block(void)
 
 void Fresh_Service_Time(void)
 {
-	win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±Êý
+	win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±ï¿½ï¿½
 	sys_write_vp(ARTNUM_UT_ADDR,(u8*)&win_str_data.disp_time,1);
 }
 
@@ -1539,7 +1483,7 @@ void Init_read_norflash(void)
 {
 	norflash_read(SYS_LOGO_OFFSET,(u8 *)&win_str_data.logo,8);
 	
-	if(win_str_data.prog_grp > 20)  //³¬ÏÞÅÐ¶Ï
+	if(win_str_data.prog_grp > 20)  //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
 	{
 		win_str_data.prog_grp = 0;
 		win_str_data.test_mode = 0;
@@ -1564,7 +1508,7 @@ void Prog_mode_para_read(void)
 	sys_write_vp(ARTNUM_MAIN_PROG_NUM_ADDR,(u8*)&win_str_data.prog_grp,1);
 	win_fresh_model_icon(win_str_data.test_mode);
 }
-//****************************´°¿ÚÊý¾Ý³õÊ¼»¯****************************
+//****************************ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½Ê¼ï¿½ï¿½****************************
 void win_init(void)
 {
 	u16 temp = 0;
@@ -1582,10 +1526,10 @@ void win_init(void)
 	win_str_data.used_time = win_str_data.used_time_h;
 	win_str_data.used_time <<= 16;
 	win_str_data.used_time |= win_str_data.used_time_l;
-	win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±Êý
+	win_str_data.disp_time = win_str_data.used_time/3600;  //Ð¡Ê±ï¿½ï¿½
 
 	if(win_str_data.product_id > PRODUCT_TOTAL) win_str_data.product_id = 0;
-//.¹¤³§½çÃæÎ¢µ÷µçÑ¹¶ÁÈ¡
+//.ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¢ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½È¡
 	norflash_read(SYS_VOL_MIN,(u8 *)&win_str_data.sys_voltage_min,6);	
 	if(win_str_data.sys_save_flag == 0XFFFF)
 	{
@@ -1596,11 +1540,11 @@ void win_init(void)
 		memcpy((u8 *)&win_str_data.sys_voltage_min,(u8 *)&product_data[win_str_data.product_id].vol_min,8);
 	}
 
-//×éºÏ³ÌÐòÄ£Ê½»ò \ ³ÌÐòÄ£Ê½ \ ÊµÑéÄ£Ê½ÅÐ¶Ï²¢¼ÓÔØ
+//ï¿½ï¿½Ï³ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½ \ ï¿½ï¿½ï¿½ï¿½Ä£Ê½ \ Êµï¿½ï¿½Ä£Ê½ï¿½Ð¶Ï²ï¿½ï¿½ï¿½ï¿½ï¿½
 //4 program group
 	Prog_mode_para_read();
 
-//7.»úÐÍÆ¥Åä	
+//7.ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½	
 	if(win_str_data.logo == 4)
 	{
 		sys_write_vp(STRING_PRODUCT_ADDR,(u8*)modle_version,sizeof(modle_version));

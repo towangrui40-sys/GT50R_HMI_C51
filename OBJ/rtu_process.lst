@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       01/07/2026 11:25:15 PAGE 1   
+C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       06/16/2026 11:48:38 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE RTU_PROCESS
@@ -28,111 +28,108 @@ line level    source
   17          {
   18   1        switch(rtu_structure.cmd[index])
   19   1        {
-  20   2          case RTU_RUN_FWD:
-  21   2          case RTU_RUN_REV:
-  22   2          case RTU_STOP:
-  23   2          case RTU_START:
-  24   2            str_sys.mc_para.set_run = rtu_structure.cmd_data[index];
-  25   2            rtu_protocol_format_wr(ADDR_MOTOR_SET_RUN,1,(u16 *)&rtu_structure.cmd_data[index]);
+  20   2          case RTU_STOP:
+  21   2          case RTU_START:
+  22   2            rtu_protocol_format_wr(ADDR_MOTOR_SET_FWD,1,(u16 *)&rtu_structure.cmd_data[index]);
+  23   2            break;
+  24   2          case RTU_SET_VLOTAGE:
+  25   2            rtu_protocol_format_wr(ADDR_MOTOR_SET_VOL,1,(u16 *)&rtu_structure.cmd_data[index]);
   26   2            break;
-  27   2          case RTU_SET_VLOTAGE:
-  28   2            rtu_protocol_format_wr(ADDR_MOTOR_SET_VOL,1,(u16 *)&rtu_structure.cmd_data[index]);
-  29   2            break;
-  30   2          case RTU_DOOR_LOCK://                                                  //ÃÅËøDC1
-  31   2          case RTU_DOOR_UNLOCK://
-  32   2            rtu_protocol_format_wr(ADDR_SET_DC1,1,(u16 *)&rtu_structure.cmd_data[index]);
-  33   2            break;    
-  34   2          case RTU_DCFAN_RUN:   //·çÉÈ¿ªÊ¼×ª¶¯
-  35   2          case RTU_DCFAN_STOP:     //·çÉÈÍ£Ö¹   str_sys.set_dc2 = 0;
-  36   2            rtu_protocol_format_wr(ADDR_SET_DC2,1,(u16 *)&rtu_structure.cmd_data[index]);
-  37   2            break;
-  38   2          case RTU_ACFAN_RUN:   //·çÉÈ¿ªÊ¼×ª¶¯  str_sys.set_ac1 = 0x01;
-  39   2          case RTU_ACFAN_STOP:     //·çÉÈÍ£Ö¹       str_sys.set_ac1 = 0;
-  40   2            rtu_protocol_format_wr(ADDR_SET_AC1,1,(u16 *)&rtu_structure.cmd_data[index]);
+  27   2          case RTU_DOOR_LOCK://                                                  //ï¿½ï¿½ï¿½ï¿½DC1
+  28   2          case RTU_DOOR_UNLOCK://
+  29   2            rtu_protocol_format_wr(ADDR_SET_DC1,1,(u16 *)&rtu_structure.cmd_data[index]);
+  30   2            break;    
+  31   2          case RTU_DCFAN_RUN:   //ï¿½ï¿½ï¿½È¿ï¿½Ê¼×ªï¿½ï¿½
+  32   2          case RTU_DCFAN_STOP:     //ï¿½ï¿½ï¿½ï¿½Í£Ö¹   str_sys.set_dc2 = 0;
+  33   2            rtu_protocol_format_wr(ADDR_SET_DC2,1,(u16 *)&rtu_structure.cmd_data[index]);
+  34   2            break;
+  35   2          case RTU_ACFAN_RUN:   //ï¿½ï¿½ï¿½È¿ï¿½Ê¼×ªï¿½ï¿½  str_sys.set_ac1 = 0x01;
+  36   2          case RTU_ACFAN_STOP:     //ï¿½ï¿½ï¿½ï¿½Í£Ö¹       str_sys.set_ac1 = 0;
+  37   2            rtu_protocol_format_wr(ADDR_SET_AC1,1,(u16 *)&rtu_structure.cmd_data[index]);
+  38   2            break;
+  39   2          case RTU_SET_TEMP:
+  40   2            rtu_protocol_format_wr(ADDR_SET_TEMP,1,(u16 *)&rtu_structure.cmd_data[index]);
   41   2            break;
-  42   2          case RTU_SET_TEMP:
-  43   2            rtu_protocol_format_wr(ADDR_SET_TEMP,1,(u16 *)&rtu_structure.cmd_data[index]);
+  42   2          case RTU_SET_LOCK:
+  43   2          rtu_protocol_format_wr(ADDR_SET_LOCK,1,(u16 *)&rtu_structure.cmd_data[index]);
   44   2            break;
-  45   2          case RTU_SET_LOCK:
-  46   2          rtu_protocol_format_wr(ADDR_SET_LOCK,1,(u16 *)&rtu_structure.cmd_data[index]);
-  47   2            break;
-  48   2          case RTU_IDlE:
-  49   2            rtu_protocol_format_rd(ADDR_MOTOR_GET_FWD,ADDR_HREG_TOTAL);
-  50   2            break;    
-  51   2          default:
-  52   2            break;
-  53   2        }
-C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       01/07/2026 11:25:15 PAGE 2   
+  45   2          case RTU_IDlE:
+  46   2            rtu_protocol_format_rd(ADDR_MOTOR_SET_FWD,ADDR_HREG_TOTAL);
+  47   2            break;    
+  48   2          default:
+  49   2            break;
+  50   2        }
+  51   1      }
+  52          void RTU_Send_Task_Handler(void)
+  53          {
+C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       06/16/2026 11:48:38 PAGE 2   
 
-  54   1      }
-  55          void RTU_Send_Task_Handler(void)
-  56          {
-  57   1        if(rtu_structure.event == EV_REPEAT)
-  58   1        {
-  59   2          if(rtu_structure.repeat == 0)
-  60   2          {
-  61   3            sys_speaker_work(1);
-  62   3            rtu_structure.addr = 0;
-  63   3            rtu_structure.funcode = 0;
-  64   3            rtu_structure.event = EV_READY;
-  65   3          }
-  66   2          else
-  67   2          {
-  68   3            rtu_structure.processed--;
-  69   3            RTU_Send_Cmd(rtu_structure.processed);
-  70   3            rtu_structure.event = EV_EXECUTE;
-  71   3            rtu_structure.cmd[rtu_structure.processed] = RTU_IDlE;
-  72   3            rtu_structure.processed = ++rtu_structure.processed % MAX_BUFFER_NUMBER;
-  73   3          }
-  74   2          if(rtu_structure.repeat>0) rtu_structure.repeat--;
-  75   2        }
-  76   1        if(rtu_structure.event!=EV_READY)
-  77   1        return;
-  78   1        if(rtu_structure.processed == rtu_structure.pending)
-  79   1        {
-  80   2          RTU_Cmd_Pending(RTU_IDlE,0);
-  81   2        }
-  82   1      
-  83   1        //start process send cmd
-  84   1        rtu_structure.event = EV_FRAME_SENT;
-  85   1        RTU_Send_Cmd(rtu_structure.processed);
-  86   1        rtu_structure.repeat = 3;
-  87   1        rtu_structure.event = EV_EXECUTE;
-  88   1        //rtu_structure.cmd[rtu_structure.processed] = RTU_IDlE;
-  89   1        rtu_structure.processed = ++rtu_structure.processed % MAX_BUFFER_NUMBER;
-  90   1      }
-  91          //dispose receive_data
-  92          void API_Callback_Handler(API_StructDef* request, API_Data_StructDef* response_data)
-  93          {
-  94   1        unsigned short idata addr=0;
-  95   1        unsigned short idata index=0;
-  96   1        unsigned short* dat = request->Data;
-  97   1        response_data = 0;
-  98   1        addr = RTU_MEM(request->addr);
-  99   1        switch(request->funcode)
- 100   1        {
- 101   2          case RTU_FUNC_CODE_RD:
- 102   2            for(index = 0;index<request->len;index++)
- 103   2            {
- 104   3              usRegHoldingBuf[addr+index].dat[0] = request->Data[index];
- 105   3            }
- 106   2          break;
- 107   2          case RTU_FUNC_CODE_WR:
- 108   2            break;
- 109   2          case RTU_FUNC_CODE_CWR:
+  54   1        if(rtu_structure.event == EV_REPEAT)
+  55   1        {
+  56   2          if(rtu_structure.repeat == 0)
+  57   2          {
+  58   3            sys_speaker_work(1);
+  59   3            rtu_structure.addr = 0;
+  60   3            rtu_structure.funcode = 0;
+  61   3            rtu_structure.event = EV_READY;
+  62   3          }
+  63   2          else
+  64   2          {
+  65   3            rtu_structure.processed--;
+  66   3            RTU_Send_Cmd(rtu_structure.processed);
+  67   3            rtu_structure.event = EV_EXECUTE;
+  68   3            rtu_structure.cmd[rtu_structure.processed] = RTU_IDlE;
+  69   3            rtu_structure.processed = ++rtu_structure.processed % MAX_BUFFER_NUMBER;
+  70   3          }
+  71   2          if(rtu_structure.repeat>0) rtu_structure.repeat--;
+  72   2        }
+  73   1        if(rtu_structure.event!=EV_READY)
+  74   1        return;
+  75   1        if(rtu_structure.processed == rtu_structure.pending)
+  76   1        {
+  77   2          RTU_Cmd_Pending(RTU_IDlE,0);
+  78   2        }
+  79   1      
+  80   1        //start process send cmd
+  81   1        rtu_structure.event = EV_FRAME_SENT;
+  82   1        RTU_Send_Cmd(rtu_structure.processed);
+  83   1        rtu_structure.repeat = 3;
+  84   1        rtu_structure.event = EV_EXECUTE;
+  85   1        //rtu_structure.cmd[rtu_structure.processed] = RTU_IDlE;
+  86   1        rtu_structure.processed = ++rtu_structure.processed % MAX_BUFFER_NUMBER;
+  87   1      }
+  88          //dispose receive_data
+  89          void API_Callback_Handler(API_StructDef* request, API_Data_StructDef* response_data)
+  90          {
+  91   1        unsigned short idata addr=0;
+  92   1        unsigned short idata index=0;
+  93   1        unsigned short* dat = request->Data;
+  94   1        response_data = 0;
+  95   1        addr = RTU_MEM(request->addr);
+  96   1        switch(request->funcode)
+  97   1        {
+  98   2          case RTU_FUNC_CODE_RD:
+  99   2            for(index = 0;index<request->len;index++)
+ 100   2            {
+ 101   3              usRegHoldingBuf[addr+index].dat[0] = request->Data[index];
+ 102   3            }
+ 103   2          break;
+ 104   2          case RTU_FUNC_CODE_WR:
+ 105   2            break;
+ 106   2          case RTU_FUNC_CODE_CWR:
+ 107   2          break;
+ 108   2          case RTU_FUNC_CODE_ERROR:
+ 109   2            
  110   2          break;
- 111   2          case RTU_FUNC_CODE_ERROR:
- 112   2            
- 113   2          break;
- 114   2          default: break;
- 115   2        }
-C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       01/07/2026 11:25:15 PAGE 3   
+ 111   2          default: break;
+ 112   2        }
+ 113   1      }
 
- 116   1      }
 
+C51 COMPILER V9.60.7.0   RTU_PROCESS                                                       06/16/2026 11:48:38 PAGE 3   
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    755    ----
+   CODE SIZE        =    722    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      13
    PDATA SIZE       =   ----    ----
