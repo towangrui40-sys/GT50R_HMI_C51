@@ -9,9 +9,7 @@
 code const char Software_version[11]={"V1.10"};
 code const char modle_version[11]={"--------"};
 Product_TypeDef product_data[PRODUCT_TOTAL]={	 
-// 																1: MM			 		1: SS
-//																2:circle			2: MM
-// 																							3: MM:SS
+
 //id,product name,	 level		   	cycle	   work_time	   pause_time	   voltage	   current
 { 0,	"GT300",    1300,1750,	  	 1,99,     1,5999,      1,5999,	    1300,1750},
 };
@@ -211,14 +209,14 @@ static void win_change_page(u16 page)    //�л�����ҳ��
 	switch(page)
 	{
 		case WORK_PAGE:
-			
+		/*
 				win_str_data.disp_count_time = ((u32)win_str_data.use_cycle * (win_str_data.use_run_time + win_str_data.use_pause_time)) - win_str_data.use_pause_time;
 		
 				win_disp_level(MAIN_TIMER,win_str_data.use_level);
 				win_disp_cycle(MAIN_TIMER,win_str_data.use_cycle);
 				win_disp_run_time(MAIN_TIMER,win_str_data.use_run_time);
 				win_disp_pause_time(MAIN_TIMER,win_str_data.use_pause_time);
-		
+		*/
 			break;
 		
 		case TEST_PAGE:
@@ -1254,7 +1252,7 @@ void win_disp_level(u16 ch,u16 val)   //��ʾ
 {
 	if(ch & MAIN_TIMER)
 	{
-		sys_write_vp(ARTNUM_MAIN_LEVEL_ADDR,(u8 *)&val,1);
+		//sys_write_vp(ARTNUM_MAIN_LEVEL_ADDR,(u8 *)&val,1);
 	}
 	if(ch & SET_TIMER)
 	{
@@ -1511,6 +1509,7 @@ void Prog_mode_para_read(void)
 //****************************�������ݳ�ʼ��****************************
 void win_init(void)
 {
+	/*
 	u16 temp = 0;
 	STR_WIN_TypeDef	*obj = &win_str_data;
 	memset(&win_str_data,0,sizeof(win_str_data));
@@ -1559,6 +1558,7 @@ void win_init(void)
 
 //10. calc level vs voltage function
 	win_calc_function();
+	*/
 	sys_delay_about_ms(4000);  
 //11. jump work page	
 
