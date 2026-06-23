@@ -1509,6 +1509,7 @@ void Prog_mode_para_read(void)
 //****************************�������ݳ�ʼ��****************************
 void win_init(void)
 {
+	u16 temp = 0;
 	/*
 	u16 temp = 0;
 	STR_WIN_TypeDef	*obj = &win_str_data;
@@ -1559,6 +1560,8 @@ void win_init(void)
 //10. calc level vs voltage function
 	win_calc_function();
 	*/
+	temp = 0x2800;
+	sys_write_vp(0X1105,(u8*)&temp,1);
 	sys_delay_about_ms(4000);  
 //11. jump work page	
 
